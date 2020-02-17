@@ -1,0 +1,13 @@
+{% extends 'orders/base.html' %}
+
+{% block title %}
+Registration success!
+{% endblock %}
+
+{% block body %}
+
+<h1>Thank you for registering.</h1>
+
+<p>Account registered successfully. Please <a href="{% url 'login' %}">login</a> to proceed.</p>
+
+{% endblock %}

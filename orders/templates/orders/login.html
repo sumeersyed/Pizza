@@ -1,0 +1,23 @@
+{% extends "orders/base.html" %}
+
+{% block title %}
+Login
+{% endblock %}
+
+{% block body %}
+<h1>Login</h1>
+{% if message %}
+    <div>
+        {{ message }}
+    </div>
+{% endif %}
+<br>
+<form action="{% url 'login' %}" method="post">
+    {% csrf_token %}
+    <label for="username">Username&nbsp;</label>
+    <input name="username" type="text"/><br>
+    <label for="password">Password&nbsp;&nbsp;</label>
+    <input name="password" type="password"/><br><br>
+    <input class="btn btn-primary pizza-button" type="submit" value="Login"/>
+</form>
+{% endblock %}

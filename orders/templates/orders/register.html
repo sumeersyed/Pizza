@@ -1,0 +1,17 @@
+{% extends "orders/base.html" %}
+
+{% block title %}
+Register
+{% endblock %}
+
+{% block body %}
+<h1>Register an Account</h1>
+<br>
+
+<form method="post" style="list-style:none;">
+    {% csrf_token %}
+    {{ form.as_p }}
+  <button type="submit" class="btn btn-primary pizza-button">Register</button>
+</form>
+
+{% endblock %}

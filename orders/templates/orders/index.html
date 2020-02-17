@@ -1,0 +1,95 @@
+{% extends 'orders/base.html' %}
+
+{% block title %}
+Zij's Pizzijria
+{% endblock %}
+
+{% block body %}
+
+<h1>Zij's Pizzijria</h1>
+<p>Making quality pizzas since 1999.</p>
+<h6>Reitarska St, 9Б, Kyiv, Ukraine, 01034</h6>
+<h6>+65 6744 8923 | +65 9774 2513</h6>
+<h6>zdravstvuyte@zijpizzijria.com</h6>
+<br>
+<hr style="width: 75%;">
+
+<div class="container pizza-header">
+    <br>
+    <h2><a name="story"></a>Our Story</h2>
+    <h6>Read how our story began in this cruel, cruel world...</h6>
+    <br>
+</div>
+{% load static %}
+<img src="{% static 'orders/images/random.jfif' %}" alt="This is a random image lol"><br><br>
+Our story began in the Qing Dynasty, where we decided to bake dough in wood-ovens. <br><br>
+<img src="{% static 'orders/images/random1.jfif' %}" alt="This is another random image lol" style="max-height: 300px;"><br><br>
+Little did we know that our pizzas were so deliciously delicious<br><br>
+<img src="{% static 'orders/images/random2.jpg' %}" alt="Yup... This is a random image" style="max-height: 300px;"><br><br>
+Now, we want to use our powers for good, so here we are, selling our humble pies! <br><br>
+<br>
+<hr style="width: 75%;">
+
+<div class="container pizza-header">
+    <br>
+    <h2><a name="locate">Locate Us</a></h2>
+    <h6>Locate us at our very accessible locations all around the Globe!</h6>
+    <br>
+</div>
+<div class="row">
+    <div class="col-7">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2540.4769653647!2d30.51058961589612!3d50.45084229521735!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40d4ce5bd89eaaab%3A0xd633b4e835a13082!2z0JrQsNGI0YLQsNC9IENvZmZlZQ!5e0!3m2!1sen!2ssg!4v1581677710478!5m2!1sen!2ssg" width="600" height="450" frameborder="0" style="border:0;" allowfullscreen=""></iframe>
+    </div>
+    <div class="col-3 border border-dark">
+        <br><br>
+        <h4>We are located at:</h4>
+        <h5><b>Restaurant X</b></h5>
+        <p>Reitarska St, 9Б, Kyiv, Ukraine, 01034</p>
+        <br>
+        <ul class="list-unstyled">Opening hours:
+            <li>Monday: 0600 - 1200</li>
+            <li>Tuesday: 1200 - 1500</li>
+            <li>Wednesday: 1000 - 1100</li>
+            <li>Thursday: <b>Closed</b></li>
+            <li>Friday: 0200 - 0800</li>
+            <li>Saturday: <b>Out for lunch</b></li>
+            <li>Sunday: 0800 - 1000</li>
+        </ul>
+    </div>
+</div>
+<br>
+<hr style="width: 75%;">
+
+<a name="contact"></a>
+<div class="container pizza-header">
+    <br>
+    <h2>Contact Us</h2>
+    <h6>We don't really respond, but who cares, contact us anyways!</h6><br>
+</div>
+<br>
+<form>
+    <div class="form-group row">
+        <div class="col-3"></div>
+        <label for="inputname" class="col-sm-1 col-form-label">Name</label>
+        <div class="col-sm-5">
+            <input type="name" class="form-control" id="inputname" placeholder="Name">
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-3"></div>
+        <label for="inputemail" class="col-sm-1 col-form-label">Email</label>
+        <div class="col-sm-5">
+            <input type="email" class="form-control" id="inputemail" placeholder="Email">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="inputmessage">Message</label>
+        <div class="form-group row">
+        <div class="col-sm-3"></div>
+        <textarea class="form-control col-sm-6" id="inputmessage" rows="5"></textarea>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary pizza-button">Send Message</button>
+</form>
+
+{% endblock %}
