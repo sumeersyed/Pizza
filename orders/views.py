@@ -17,7 +17,8 @@ def index(request):
 def menu(request):
     if request.method == "POST":
         canOrder = request.user.is_authenticated
-        debug = request.POST["addprimo"]
+        debug = request.POST["addpizza"]
+        img = "/static/orders/images/pizza/22.jpg"
         context = {
             "user": request.user,
             "canOrder": canOrder,
@@ -28,11 +29,13 @@ def menu(request):
             "primos": Primo.objects.all(),
             "platters": Platter.objects.all(),
             "cart": 1,
-            "debug": debug
+            "debug": debug,
+            "img": img
         }
         return render(request, "orders/home.html", context)
     elif request.method == "GET":
         canOrder = request.user.is_authenticated
+        img = "/static/orders/images/pizza/22.jpg"        
         context = {
             "user": request.user,
             "canOrder": canOrder,
@@ -41,7 +44,8 @@ def menu(request):
             "subs": Sub.objects.all(),
             "extras": Extra.objects.all(),
             "primos": Primo.objects.all(),
-            "platters": Platter.objects.all()
+            "platters": Platter.objects.all(),
+            "img": img
         }
         return render(request, "orders/home.html", context)
 
