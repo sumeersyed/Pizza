@@ -15,10 +15,16 @@ def index(request):
 
 
 def menu(request):
+    pizzas = Pizza.objects.all()
+    imgurl = "/static/orders/images/"
+    img = []
+    for i in range(22, 32, 2):
+        img.append(imgurl + "pizza/" + str(i) + ".jpg")
+
     if request.method == "POST":
         canOrder = request.user.is_authenticated
         debug = request.POST["addpizza"]
-        img = "/static/orders/images/pizza/22.jpg"
+        # img = "/static/orders/images/pizza/0.jpg"
         context = {
             "user": request.user,
             "canOrder": canOrder,
@@ -35,7 +41,7 @@ def menu(request):
         return render(request, "orders/home.html", context)
     elif request.method == "GET":
         canOrder = request.user.is_authenticated
-        img = "/static/orders/images/pizza/22.jpg"        
+        # img = "/static/orders/images/pizza/0.jpg"        
         context = {
             "user": request.user,
             "canOrder": canOrder,

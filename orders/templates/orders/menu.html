@@ -1,5 +1,5 @@
 <div class="menu">
-    <div class="container pizza-header">
+    <div class="container-fluid pizza-header">
         <br>
         <h2>Menu</h2>
         <br>
@@ -26,7 +26,7 @@
     <p><small>What's the difference between Regular and Sicilian Pizza? Click <a href="" data-toggle="modal" data-target="#exampleModal">here</a> to find out</small></p><br>
     
     <!--- Revamped Menu -->
-    <div class="container"><b>
+    <div class="container-fluid"><b>
         <div class="row">
             <div class="col-6"></div>
             <div class="col-2"><b>Regular Pizza</b></div>
@@ -41,11 +41,11 @@
             <div class="col-1">Large</div>
             <div class="col-2"></div>
         </div>
-        <div class="row">
-            {% for topping in pizzas.0.PIZZA_TOPPINGS %}
+        {% for topping in pizzas.0.PIZZA_TOPPINGS %}
+            <div class="row">
                 <div class="col-2"></div>
                 <div class="col-2 text-right">
-                    <img src="{{ img }}" style="max-height: 150px; border-radius: 50%;">
+                    <img class="img-fluid" src="/static/orders/images/pizza/{{ topping.0 }}.jpg" style="max-height: 150px; border-radius: 50%;">
                 </div>
                 <div class="col-2 text-left" style="margin-top: auto; margin-bottom: auto;">
                     <b>{{ topping.1 }}</b>
@@ -84,8 +84,8 @@
                     {% endif %}
                 {% endfor %}
                 <div class="col-2"></div>
-            {% endfor %}
-        </div>
+            </div><br>
+        {% endfor %}
     </b></div><br><br>
 
     <h4>Subs</h4>
@@ -96,12 +96,11 @@
             <div class="col-1">Large</div>
             <div class="col-3"></div>
         </div>
-        <div class="row">
-            {% for sub in subs %}
+        {% for sub in subs %}
+            <div class="row">
                 <div class="col-3"></div>
                 <div class="col-2 text-right">
-                    {% load static %}
-                    <img src="{% static 'orders/images/sicilianpizza2.jpg' %}" style="max-height: 150px; border-radius: 50%;">
+                    <img class="img-fluid" src="/static/orders/images/sub/{{ sub.id }}.jpg" style="max-height: 150px; border-radius: 50%;">
                 </div>
                 <div class="col-2 text-left" style="margin-top: auto; margin-bottom: auto;">
                     <b>{{ sub.subName }}</b>
@@ -137,18 +136,17 @@
                             </form>
                         </div>
                 <div class="col-3"></div>
-            {% endfor %}
-        </div>
+            </div><br>
+        {% endfor %}
     </b></div><br><br>
 
     <h4>Primos</h4>
-    <div class="container"><b>
-        <div class="row">
-            {% for primo in primos %}
+    <div class="container"><b>        
+        {% for primo in primos %}
+            <div class="row">
                 <div class="col-3"></div>
                 <div class="col-2 text-right">
-                    {% load static %}
-                    <img src="{% static 'orders/images/sicilianpizza2.jpg' %}" style="max-height: 150px; border-radius: 50%;">
+                    <img class="img-fluid" src="/static/orders/images/primo/{{ primo.id }}.jpg" style="max-height: 150px; border-radius: 50%;">
                 </div>
                 <div class="col-2 text-left" style="margin-top: auto; margin-bottom: auto;">
                     <b>{{ primo.name }}</b>
@@ -163,8 +161,8 @@
                         </form>
                     </div>
                 <div class="col-4"></div>
-            {% endfor %}
-        </div>
+            </div><br>
+        {% endfor %}
     </b></div><br><br>
 
     <h4>Dinner Platters</h4>
@@ -175,12 +173,11 @@
             <div class="col-1">Large</div>
             <div class="col-3"></div>
         </div>
-        <div class="row">
-            {% for platter in platters %}
+        {% for platter in platters %}
+            <div class="row">
                 <div class="col-3"></div>
                 <div class="col-2 text-right">
-                    {% load static %}
-                    <img src="{% static 'orders/images/sicilianpizza2.jpg' %}" style="max-height: 150px; border-radius: 50%;">
+                    <img class="img-fluid" src="/static/orders/images/platter/{{ platter.id }}.jpg" style="max-height: 150px; border-radius: 50%;">
                 </div>
                 <div class="col-2 text-left" style="margin-top: auto; margin-bottom: auto;">
                     <b>{{ platter.name }}</b>
@@ -204,7 +201,7 @@
                             </form>
                         </div>
                 <div class="col-3"></div>
-            {% endfor %}
-        </div>
+            </div><br>
+        {% endfor %}
     </b></div><br>
 </div>
