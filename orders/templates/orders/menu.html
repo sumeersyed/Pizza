@@ -1,5 +1,5 @@
 <div class="menu">
-    <div class="container pizza-header">
+    <div class="container-fluid pizza-header">
         <br>
         <h2>Menu</h2>
         <br>
@@ -8,87 +8,200 @@
 
     {{ debug }}
 
+    <form>
+        {% csrf_token %}
+        <select class="selectpicker" multiple>
+            <option>Mustard</option>
+            <option>Ketchup</option>
+            <option>Relish</option>
+        </select>          
+    </form>
+
     <form action="" method="post">
         {% csrf_token %}
         <input type="submit" name="x" value="+">
     </form>
 
     <h4>Pizzas</h4>
-    <p><small>What's the difference between Regular and Sicilian Pizza? Click <a href="" data-toggle="modal" data-target="#exampleModal">here</a> to find out</small></p>
+    <p><small>What's the difference between Regular and Sicilian Pizza? Click <a href="" data-toggle="modal" data-target="#exampleModal">here</a> to find out</small></p><br>
     
-    <div class="container border border-dark"><b>
+    <!--- Revamped Menu -->
+    <div class="container-fluid"><b>
         <div class="row">
-            <div class="col-4 border border-dark"></div>
-            <div class="col-4 border border-dark"><b>Regular Pizza</b></div>
-            <div class="col-4 border border-dark"><b>Sicilian Pizza</b></div>
+            <div class="col-6"></div>
+            <div class="col-2"><b>Regular Pizza</b></div>
+            <div class="col-2"><b>Sicilian Pizza</b></div>
         </div>
+        <br>
         <div class="row">
-            <div class="col-4 border border-dark"></div>
-            <div class="col-2 border border-dark"><b>Small</b></div>
-            <div class="col-2 border border-dark"><b>Large</b></div>
-            <div class="col-2 border border-dark"><b>Small</b></div>
-            <div class="col-2 border border-dark"><b>Large</b></div>
+            <div class="col-6"></div>
+            <div class="col-1">Small</div>
+            <div class="col-1">Large</div>
+            <div class="col-1">Small</div>
+            <div class="col-1">Large</div>
+            <div class="col-2"></div>
         </div>
-        <div class="row">
-            {% for topping in pizzas.0.PIZZA_TOPPINGS %}
-                <div class="col-4 border border-dark text-left" style="padding-left: 100px;">
-                    {% load static %}
-                    <img src="{% static 'orders/images/sicilianpizza2.jpg' %}" style="max-height: 150px; border-radius: 50%;">
+        {% for topping in pizzas.0.PIZZA_TOPPINGS %}
+            <div class="row">
+                <div class="col-2"></div>
+                <div class="col-2 text-right">
+                    <img class="img-fluid" src="/static/orders/images/pizza/{{ topping.0 }}.jpg" style="max-height: 150px; border-radius: 50%;">
+                </div>
+                <div class="col-2 text-left" style="margin-top: auto; margin-bottom: auto;">
                     <b>{{ topping.1 }}</b>
+                    {% if not topping.1 == "Cheese" %}
+                        <form>
+                            <div style="margin-top: 5px;">
+                                <select class="selectpicker form-control pizza-button" data-width="75%" multiple data-max-options="{{ topping.0 }}">
+                                    {% for toppingType in toppings %}
+                                        <option value="{{ toppingType }}">{{ toppingType }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </form>
+                    {% endif %}
                 </div>
                 {% for pizza in pizzas %}
                     {% if pizza.numberoftoppings == topping.0 %}
-                        <div class="col-2 border border-dark">${{ pizza.sPrice }}</div>
-                        <div class="col-2 border border-dark">${{ pizza.lPrice }}</div>
+                        <div class="col-1" style="margin-top: auto; margin-bottom: auto;">
+                            ${{ pizza.sPrice }}
+                            <br>
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="addpizza" value="{{ pizza.id }}">
+                                <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px;">
+                            </form>
+                        </div>
+                        <div class="col-1" style="margin-top: auto; margin-bottom: auto;">
+                            ${{ pizza.lPrice }}
+                            <br>
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="addpizza" value="{{ pizza.id }}">
+                                <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px">
+                            </form>
+                        </div>
                     {% endif %}
                 {% endfor %}
-            {% endfor %}
-        </div>
-    </b></div>
-    <br><br>
+                <div class="col-2"></div>
+            </div><br>
+        {% endfor %}
+    </b></div><br><br>
 
     <h4>Subs</h4>
-    <div class="container border border-dark"><b>
+    <div class="container"><b>
         <div class="row">
-            <div class="col-4 border border-dark"></div>
-            <div class="col-4 border border-dark"><b>Small</b></div>
-            <div class="col-4 border border-dark"><b>Large</b></div>
+            <div class="col-7"></div>
+            <div class="col-1">Small</div>
+            <div class="col-1">Large</div>
+            <div class="col-3"></div>
         </div>
-        <div class="row">
-            {% for sub in subs %}
-                <div class="col-4 border border-dark"><b>{{ sub.subName }}</b></div>
-                <div class="col-4 border border-dark">${{ sub.sPrice }}</div>
-                <div class="col-4 border border-dark">${{ sub.lPrice }}</div>
-            {% endfor %}
-        </div>
-    </b></div>
-    <br><br>
-
-    <h4>Primos</h4>
-    <div class="container border border-dark"><b>
-        <div class="row" id="primo">
-            {% for primo in primos %}
-                <div class="col-8 border border-dark">{{ primo.name }}</div>
-                <div class="col-4 border border-dark">${{ primo.price }}
-                    <form action="" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="addprimo" value="{{ primo.name }}">
-                        <input type="submit" value="+">
+        {% for sub in subs %}
+            <div class="row">
+                <div class="col-3"></div>
+                <div class="col-2 text-right">
+                    <img class="img-fluid" src="/static/orders/images/sub/{{ sub.id }}.jpg" style="max-height: 150px; border-radius: 50%;">
+                </div>
+                <div class="col-2 text-left" style="margin-top: auto; margin-bottom: auto;">
+                    <b>{{ sub.subName }}</b>
+                    <form>
+                        <div style="margin-top: 5px;">
+                            <select class="selectpicker form-control pizza-button" data-width="75%" multiple data-max-options="{{ topping.0 }}">
+                                {% for extraType in extras %}
+                                    <option value="{{ extraType }}">{{ extraType }}</option>
+                                {% endfor %}
+                                <option value="extraCheese">Extra Cheese</option>
+                            </select>
+                        </div>
                     </form>
                 </div>
-            {% endfor %}
-        </div>
-    </b></div>
-    <br><br>
+                        <div class="col-1" style="margin-top: auto; margin-bottom: auto;">
+                            {% if sub.sPrice >= 0.01 %}
+                                ${{ sub.sPrice }}
+                                <br>
+                                <form action="" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="addsub" value="{{ sub.id }}">
+                                    <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px;">
+                                </form>
+                            {% endif %}
+                        </div>
+                        <div class="col-1" style="margin-top: auto; margin-bottom: auto;">
+                            ${{ sub.lPrice }}
+                            <br>
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="addsub" value="{{ sub.id }}">
+                                <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px">
+                            </form>
+                        </div>
+                <div class="col-3"></div>
+            </div><br>
+        {% endfor %}
+    </b></div><br><br>
+
+    <h4>Primos</h4>
+    <div class="container"><b>        
+        {% for primo in primos %}
+            <div class="row">
+                <div class="col-3"></div>
+                <div class="col-2 text-right">
+                    <img class="img-fluid" src="/static/orders/images/primo/{{ primo.id }}.jpg" style="max-height: 150px; border-radius: 50%;">
+                </div>
+                <div class="col-2 text-left" style="margin-top: auto; margin-bottom: auto;">
+                    <b>{{ primo.name }}</b>
+                </div>
+                    <div class="col-1" style="margin-top: auto; margin-bottom: auto;">
+                        ${{ primo.price }}
+                        <br>
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="addsub" value="{{ sub.id }}">
+                            <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px;">
+                        </form>
+                    </div>
+                <div class="col-4"></div>
+            </div><br>
+        {% endfor %}
+    </b></div><br><br>
 
     <h4>Dinner Platters</h4>
-    <div class="container border border-dark"><b>
+    <div class="container"><b>
         <div class="row">
-            {% for platter in platters %}
-                <div class="col-4 border border-dark">{{ platter.name }}</div>
-                <div class="col-4 border border-dark">${{ platter.sPrice }}</div>
-                <div class="col-4 border border-dark">${{ platter.lPrice }}</div>
-            {% endfor %}
+            <div class="col-7"></div>
+            <div class="col-1">Small</div>
+            <div class="col-1">Large</div>
+            <div class="col-3"></div>
         </div>
-    </b></div>
+        {% for platter in platters %}
+            <div class="row">
+                <div class="col-3"></div>
+                <div class="col-2 text-right">
+                    <img class="img-fluid" src="/static/orders/images/platter/{{ platter.id }}.jpg" style="max-height: 150px; border-radius: 50%;">
+                </div>
+                <div class="col-2 text-left" style="margin-top: auto; margin-bottom: auto;">
+                    <b>{{ platter.name }}</b>
+                </div>
+                        <div class="col-1" style="margin-top: auto; margin-bottom: auto;">
+                            ${{ platter.sPrice }}
+                            <br>
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="addsub" value="{{ sub.id }}">
+                                <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px;">
+                            </form>
+                        </div>
+                        <div class="col-1" style="margin-top: auto; margin-bottom: auto;">
+                            ${{ platter.lPrice }}
+                            <br>
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="addsub" value="{{ sub.id }}">
+                                <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px">
+                            </form>
+                        </div>
+                <div class="col-3"></div>
+            </div><br>
+        {% endfor %}
+    </b></div><br>
 </div>

@@ -1,32 +1,16 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 SIZE_CHOICES = (("S", "Small"), ("L", "Large"))
 
 # Create your models here.
 class Topping(models.Model): 
-    TOPPING_CHOICES = (
-                        ("PEPPERONI", "Pepperoni"),
-                        ("SAUSAGE", "Sausage"),
-                        ("MUSHROOMS", "Mushrooms"),
-                        ("ONIONS", "Onions"),
-                        ("HAM", "Ham"),
-                        ("CANADIAN HAM", "Canadian Ham"),
-                        ("PINEAPPLE", "Pineapple"),
-                        ("EGGPLANT", "Eggplant"),
-                        ("TOMATO AND BASIL", "Tomato & Basil"),
-                        ("GREEN PEPPERS", "Green Peppers"),
-                        ("HAMBURGER", "Hamburger"),
-                        ("SPINACH", "Spinach"),
-                        ("ARTICHOKE", "Artichoke"),
-                        ("BUFFALO CHICKEN", "Buffalo Chicken"),
-                        ("BARBECUE CHICKEN", "Barbecue Chicken"),
-                        ("ANCHOVIES", "Anchovies"),
-                        ("BLACK OLIVES", "Black Olives"),
-                        ("FRESH GARLIC", "Fresh Garlic"),
-                        ("ZUCCHINI", "Zucchini")
-    )
+    topping = models.CharField(max_length=64)
+    toppingStylized = models.CharField(max_length=64, default="NOT NULL")
+    promotional = models.BooleanField(default=False)
 
-    topping = models.CharField(max_length=64, choices=TOPPING_CHOICES)
+    def __str__(self):
+        return f"{self.toppingStylized}"
 
 
 class Pizza(models.Model):
@@ -44,17 +28,14 @@ class Pizza(models.Model):
         return f"{self.get_pizzaType_display()} Pizza with {self.get_numberoftoppings_display()}: ${self.sPrice} (S), ${self.lPrice} (L)"
 
 class Extra(models.Model):
-    EXTRA_CHOICES = (
-        ("Mushrooms", "+ Mushrooms"),
-        ("Green Peppers", "+ Green Peppers"),
-        ("Onions", "+ Onions")
-    )
 
-    extra = models.CharField(max_length=64, choices=EXTRA_CHOICES)
+    extra = models.CharField(max_length=64)
+    extraStylized = models.CharField(max_length=64, default="NOT NULL")
     price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    promotional = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.get_extra_display()} for ${self.price}"
+        return f"{self.extraStylized} for ${self.price}"
 
 class Sub(models.Model):
 
@@ -94,5 +75,11 @@ class Cart(models.Model):
     platters = models.ManyToManyField(Platter, blank=True)
     primos = models.ManyToManyField(Primo, blank=True)
 
+    def order(self):
+        orders = ""
+        for pizza in self.pizzas.all():
+            orders += pizza.__str__()
+        return orders
+
     def __str__(self):
-        return f"{self.id}"
+        return f"{self.id}: {self.pizzas}"
