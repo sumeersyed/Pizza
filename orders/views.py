@@ -6,7 +6,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import Pizza, Topping, Sub, Extra, Primo, Platter
+#   from .models import Pizza, Topping, Sub, Extra, Primo, Platter
+from .models import MenuItem, Category, Product
 from .forms import RegistrationForm
 
 # Create your views here.
@@ -15,7 +16,6 @@ def index(request):
 
 
 def menu(request):
-    pizzas = Pizza.objects.all()
     imgurl = "/static/orders/images/"
     img = []
     for i in range(22, 32, 2):
@@ -28,12 +28,10 @@ def menu(request):
         context = {
             "user": request.user,
             "canOrder": canOrder,
-            "pizzas": Pizza.objects.all(),
-            "toppings": Topping.objects.all(),
-            "subs": Sub.objects.all(),
-            "extras": Extra.objects.all(),
-            "primos": Primo.objects.all(),
-            "platters": Platter.objects.all(),
+            "products": Product.objects.all(),
+            "categories": Category.objects.all(),
+            "topping": Category.objects.get(name="Topping"),
+            "extra": Category.objects.get(name="Extra"),
             "cart": 1,
             "debug": debug,
             "img": img
@@ -45,12 +43,10 @@ def menu(request):
         context = {
             "user": request.user,
             "canOrder": canOrder,
-            "pizzas": Pizza.objects.all(),
-            "toppings": Topping.objects.all(),
-            "subs": Sub.objects.all(),
-            "extras": Extra.objects.all(),
-            "primos": Primo.objects.all(),
-            "platters": Platter.objects.all(),
+            "products": Product.objects.all(),
+            "categories": Category.objects.all(),
+            "topping": Category.objects.get(name="Topping"),
+            "extra": Category.objects.get(name="Extra"),
             "img": img
         }
         return render(request, "orders/home.html", context)

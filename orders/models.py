@@ -1,85 +1,47 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-SIZE_CHOICES = (("S", "Small"), ("L", "Large"))
+# Create your models here
 
-# Create your models here.
-class Topping(models.Model): 
-    topping = models.CharField(max_length=64)
-    toppingStylized = models.CharField(max_length=64, default="NOT NULL")
-    promotional = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.toppingStylized}"
-
-
-class Pizza(models.Model):
-    
-    PIZZA_TYPE = (("sicilian", "Sicilian"), ("regular", "Regular"))
-    PIZZA_TOPPINGS = ((0, "Cheese"), (1, "1 Topping"), (2, "2 Toppings"), (3, "3 Toppings"), (4, "Special Toppings"))
-
-    pizzaType = models.CharField(max_length=32, choices=PIZZA_TYPE)
-    sPrice = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    lPrice = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    numberoftoppings = models.IntegerField(choices=PIZZA_TOPPINGS, default=0)
-    toppings = models.ManyToManyField(Topping, blank=True)
+class Category(models.Model):
+    CATEGORY_TYPES = (("primary", "Primary"), ("topping", "Topping"), ("extra", "Extra"))
+    name = models.CharField(max_length=64)
+    menu_name = models.CharField(max_length=64, blank=True, null=True)
+    category_type = models.CharField(max_length=16, choices=CATEGORY_TYPES, default="primary")
 
     def __str__(self):
-        return f"{self.get_pizzaType_display()} Pizza with {self.get_numberoftoppings_display()}: ${self.sPrice} (S), ${self.lPrice} (L)"
+        return f"{self.name}"
 
-class Extra(models.Model):
-
-    extra = models.CharField(max_length=64)
-    extraStylized = models.CharField(max_length=64, default="NOT NULL")
-    price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    promotional = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.extraStylized} for ${self.price}"
-
-class Sub(models.Model):
-
-    subName = models.CharField(max_length=64)
-    sPrice = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    lPrice = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    addextra = models.CharField(max_length=64, null=True)
-    extras = models.ManyToManyField(Extra, blank=True)
-    extraCheese = models.BooleanField(default=False)
+class Product(models.Model):
+    name = models.CharField(max_length=64)
+    stylized_name = models.CharField(max_length=64, null=True, blank=True)
+    category = models.ForeignKey("Category", on_delete=models.CASCADE, related_name="products")
+    addon_category = models.ForeignKey("Category", on_delete=models.CASCADE, related_name="related_products", blank=True, null=True)
+    addon_limit = models.IntegerField(default=0, null=True)
 
     def __str__(self):
-        if self.extraCheese:
-            return f"{self.subName} with Extra Cheese: ${self.sPrice + 0.50} (S), ${self.lPrice + 0.50} (L)"
+        if self.stylized_name:
+            return f"{self.stylized_name} {self.category}"
         else:
-            return f"{self.subName}: ${self.sPrice} (S), ${self.lPrice} (L)"
+            return f"{self.name} {self.category}"
 
-class Primo(models.Model):
-
-    name = models.CharField(max_length=64)
-    price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-
-    def __str__(self):
-        return f"{self.name}: ${self.price}"
-
-class Platter(models.Model):
-
-    name = models.CharField(max_length=64)
-    sPrice = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    lPrice = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+class MenuItem(models.Model):
+    SIZE_CHOICES = (("s", "Small"), ("l", "Large"))
+    product = models.ForeignKey("Product", on_delete=models.CASCADE, related_name="menu_items")
+    size = models.CharField(max_length=16, choices=SIZE_CHOICES, blank=True, null=True)
+    price = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.name}: ${self.sPrice} (S), ${self.lPrice} (L)"
-
-class Cart(models.Model):
-    pizzas = models.ManyToManyField(Pizza, blank=True)
-    subs = models.ManyToManyField(Sub, blank=True)
-    platters = models.ManyToManyField(Platter, blank=True)
-    primos = models.ManyToManyField(Primo, blank=True)
-
-    def order(self):
-        orders = ""
-        for pizza in self.pizzas.all():
-            orders += pizza.__str__()
-        return orders
-
-    def __str__(self):
-        return f"{self.id}: {self.pizzas}"
+        if self.product.category.category_type == 'primary':
+            cat = self.product.category.name + " - "
+        else:
+            cat = ""
+        if self.size:
+            size = self.get_size_display()
+        else:
+            size = ""
+        if self.price:
+            price = ": $" + str(self.price)
+        else:
+            price = ""
+        return f"{size} {cat} {self.product.name} {price}"
