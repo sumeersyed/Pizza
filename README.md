@@ -1,5 +1,4 @@
 # Project 3: Pizza
----
 ### Web Programming with Python and JavaScript
 #### Note: bolded points are works in progress
 
@@ -30,14 +29,11 @@ Project 3 gets us to use Django, a Python-based free and open-source web framewo
 
 ### Images courtesy of friendly-neighbourhood **Google**, except for the image of the pizza on a plate which is used as the background image and for the menu, which was taken by me in Firenze, Italia
 
----
 ## App-in-Action
 **To-do**
 
----
 ## Setup
 **To-do**
 
----
 ## Improvements/bugs
 **To-do** 
