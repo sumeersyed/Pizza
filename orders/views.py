@@ -23,7 +23,7 @@ def menu(request):
 
     if request.method == "POST":
         canOrder = request.user.is_authenticated
-        debug = request.POST["addpizza"]
+        debug = request.POST["additem"]
         # img = "/static/orders/images/pizza/0.jpg"
         context = {
             "user": request.user,

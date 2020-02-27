@@ -7,7 +7,8 @@
     <br>
 
     {{ debug }}
-
+    <hr>
+    
     {% for category in categories %}
         {% if category.category_type == "primary" %}
             {% if category.name == "Sicilian Pizza" %}
@@ -50,7 +51,7 @@
                                             <br>
                                             <form action="" method="post">
                                                 {% csrf_token %}
-                                                <input type="hidden" name="addsub" value="{{ sub.id }}">
+                                                <input type="hidden" name="additem" value="[{{ product.name }}, {{ item.size }}, {{ product }}, {{ item }}]">
                                                 <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px;">
                                             </form>
                                         </div>
@@ -61,7 +62,7 @@
                                             <br>
                                             <form action="" method="post">
                                                 {% csrf_token %}
-                                                <input type="hidden" name="addsub" value="{{ sub.id }}">
+                                                <input type="hidden" name="additem" value="[{{ product.name }}, {{ item.size }}, {{ product }}, {{ item }}]">
                                                 <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px;">
                                             </form>
                                         </div>
@@ -134,7 +135,7 @@
                                             <br>
                                             <form action="" method="post">
                                                 {% csrf_token %}
-                                                <input type="hidden" name="addsub" value="{{ sub.id }}">
+                                                <input type="hidden" name="additem" value="[{{ product.name }}, {{ item.size }}, {{ product }}, {{ item }}]">
                                                 <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px;">
                                             </form>
                                         </div>
@@ -145,8 +146,8 @@
                                             <br>
                                             <form action="" method="post">
                                                 {% csrf_token %}
-                                                <input type="hidden" name="addsub" value="{{ sub.id }}">
-                                                <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px;">
+                                                <input type="hidden" name="additem" value="[{{ product.name }}, {{ item.size }}, {{ product }}, {{ item }}]">
+                                                    <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px;">
                                             </form>
                                         </div>
                                     {% endif %}
@@ -156,7 +157,7 @@
                                             <br>
                                             <form action="" method="post">
                                                 {% csrf_token %}
-                                                <input type="hidden" name="addsub" value="{{ sub.id }}">
+                                                <input type="hidden" name="additem" value="[{{ product.name }}, {{ item.size }}, {{ product }}, {{ item }}]">
                                                 <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px;">
                                             </form>
                                         </div>
