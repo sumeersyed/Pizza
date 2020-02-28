@@ -94,7 +94,7 @@
                         <a class="nav-item nav-link mr-auto active" href="{% url 'login' %}">Login</a>
                     {% else %}
                     <script src="https://use.fontawesome.com/c560c025cf.js"></script>
-                        <a class="nav-item nav-link mr-auto active" href="" tabindex="-1" aria-disabled="true"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Cart</a>
+                        <a class="nav-item nav-link mr-auto active" href="{% url 'cart' %}" tabindex="-1" aria-disabled="true"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Cart</a>
                         {% if cart %}
                             1
                         {% endif %}

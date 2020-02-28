@@ -1,8 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
 
 # Create your models here
 
+# Menu
 class Category(models.Model):
     CATEGORY_TYPES = (("primary", "Primary"), ("topping", "Topping"), ("extra", "Extra"))
     name = models.CharField(max_length=64)
@@ -41,7 +43,72 @@ class MenuItem(models.Model):
         else:
             size = ""
         if self.price:
-            price = ": $" + str(self.price)
+            price = " (+$" + str(self.price) + ")"
         else:
             price = ""
-        return f"{size} {cat} {self.product.name} {price}"
+        return f"{size} {cat} {self.product.name}{price}"
+
+# Cart 
+class Cart(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    items = models.ManyToManyField("MenuItem", through="AddedItem")
+    ordered = models.BooleanField(default=False)
+
+    def totalquantity(self):
+        q = 0
+        for item in self.items.all():
+            q += item.added_item.first().quantity
+        return q
+
+    def subtotal(self):
+        total = 0
+        for item in self.items.all():
+            total += item.added_item.first().totalprice()
+        return total
+
+    """ def __str__(self):
+        items = self.items.all()
+        main = str(items[0])
+        extras = "(" + ", ".join(str(x) for x in items[1:]) + ")" if items[1:] else ""
+        return main + extras
+
+    def total_sum(self):
+        return sum(filter(None, [item.price for item in self.items.all()])) """
+
+class AddedItem(models.Model):
+    item = models.ForeignKey("MenuItem", on_delete=models.CASCADE, related_name="added_item")
+    cart = models.ForeignKey("Cart", on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+    extras = models.ManyToManyField("MenuItem", through="ExtraSelection")
+
+    def totalprice(self):
+        if self.extras.all():
+            for extra in self.extras:
+                price += extra.item.price
+            return self.quantity * (self.item.price + price)
+        else:
+            return self.quantity * self.item.price
+
+    def __str__(self):
+        if self.extras.all():
+            extras = self.extras.all()
+            extrasprice = 0
+            for extra in extras:
+                extrasprice += extra.price
+            string = ", ".join(str(extra) for extra in extras)
+            totalprice = self.item.price + extrasprice
+            sentence = f"{self.quantity} x {self.item} with {self.item.product.addon_category}: " + string + f" at $" + str(totalprice)
+            return sentence
+        else:
+            return f"{self.quantity} x {self.item.product.name} at ${self.item.price} = ${self.totalprice()}"
+        #sentence = "{self.quantity} x {self.item.product.name} with {self.item.product.addon_category}: " + addons + " at {self.item.price} = {self.totalprice()}"
+        # return f"{self.quantity} * {self.item.product.name} at {self.item.price} = {self.totalprice()}"
+
+class ExtraSelection(models.Model):
+    item = models.ForeignKey("MenuItem", on_delete=models.CASCADE)
+    main = models.ForeignKey("AddedItem", on_delete=models.CASCADE)
+
+class Order(models.Model):
+    carts = models.ManyToManyField(Cart)
+    created = models.DateTimeField(auto_now_add=True, blank=True)
+    finished = models.DateTimeField(default=False)

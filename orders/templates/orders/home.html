@@ -16,6 +16,10 @@ Welcome!
     <hr style="width: 75%;">
     {% include 'orders/menu.html' %}
     {% else %}
+        <div class="alert alert-warning" role="alert" style="width: 35%; margin: auto;">
+            You are currently not logged in!
+        </div> 
+        <br>
         <p>Register for an account <a href="{% url 'register' %}">here</a> to start ordering.</p>
         <p>Already have an account? Login <a href="{% url 'login' %}">here</a> here to make an order.</p>
     {% endif %}

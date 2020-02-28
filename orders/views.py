@@ -5,23 +5,33 @@ from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
+
 
 #   from .models import Pizza, Topping, Sub, Extra, Primo, Platter
-from .models import MenuItem, Category, Product
+from .models import MenuItem, Category, Product, Cart, AddedItem, Order, ExtraSelection
 from .forms import RegistrationForm
 
 # Create your views here.
 def index(request):
     return render(request, "orders/index.html", {"message": None})
 
-
 def menu(request):
-    imgurl = "/static/orders/images/"
-    img = []
-    for i in range(22, 32, 2):
-        img.append(imgurl + "pizza/" + str(i) + ".jpg")
-
     if request.method == "POST":
+        cart = Cart.objects.filter(user=request.user, ordered=False).last()
+        if not cart:
+            cart = Cart(user=request.user)
+            cart.save()
+        item = MenuItem.objects.get(id=request.POST["additem"])    
+        addeditem = AddedItem.objects.filter(cart=cart, item=item)
+        if addeditem.count() > 0:
+            addeditem = addeditem.first()
+            addeditem.quantity += 1
+            addeditem.save()
+        else:
+            addeditem = AddedItem(item=item, cart=cart)
+            addeditem.save()
+
         canOrder = request.user.is_authenticated
         debug = request.POST["additem"]
         # img = "/static/orders/images/pizza/0.jpg"
@@ -33,23 +43,60 @@ def menu(request):
             "topping": Category.objects.get(name="Topping"),
             "extra": Category.objects.get(name="Extra"),
             "cart": 1,
-            "debug": debug,
-            "img": img
+            "debug": debug
         }
         return render(request, "orders/home.html", context)
     elif request.method == "GET":
-        canOrder = request.user.is_authenticated
-        # img = "/static/orders/images/pizza/0.jpg"        
+        canOrder = request.user.is_authenticated    
         context = {
             "user": request.user,
             "canOrder": canOrder,
             "products": Product.objects.all(),
             "categories": Category.objects.all(),
             "topping": Category.objects.get(name="Topping"),
-            "extra": Category.objects.get(name="Extra"),
-            "img": img
+            "extra": Category.objects.get(name="Extra")
         }
         return render(request, "orders/home.html", context)
+
+""" Cart, adding items and ordering """
+
+@login_required(login_url='/login')
+def cart(request):
+    cart = Cart.objects.filter(user=request.user, ordered=False).last()
+    if not cart:
+        cart = Cart(user=request.user)
+        cart.save()
+
+    addeditems = AddedItem.objects.filter(cart=cart).all
+
+    context = {
+        "cart": cart,
+        "addeditems": addeditems
+    }
+
+    if request.method == "POST":
+        context["debug"] = request.POST
+        if "additem" in request.POST:        
+            itemid = request.POST["additem"]
+            item = AddedItem.objects.get(id=itemid)
+            item.quantity += 1
+            item.save()
+        elif "minusitem" in request.POST:
+            itemid = request.POST["minusitem"]
+            item = AddedItem.objects.get(id=itemid)
+            if item.quantity == 1:
+                item.delete()
+            else:
+                item.quantity -= 1
+                item.save()
+        elif "deleteitem" in request.POST:
+            itemid = request.POST["deleteitem"]
+            item = AddedItem.objects.filter(id=itemid)
+            item.delete()
+
+    return render(request, "orders/cart.html", context)
+
+""" User login/register/logout """
 
 def login_view(request):
     if request.method == "GET":
