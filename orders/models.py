@@ -36,16 +36,19 @@ class MenuItem(models.Model):
     def __str__(self):
         if self.product.category.category_type == 'primary':
             cat = self.product.category.name + " - "
+            price = ""
         else:
             cat = ""
+            if self.price:
+                price = " (+$" + str(self.price) + ")"
+            else:
+                price = ""
         if self.size:
             size = self.get_size_display()
         else:
             size = ""
-        if self.price:
-            price = " (+$" + str(self.price) + ")"
-        else:
-            price = ""
+        if self.product.stylized_name:
+            return f"{size} {cat} {self.product.stylized_name}{price}"
         return f"{size} {cat} {self.product.name}{price}"
 
 # Cart 
@@ -79,18 +82,24 @@ class AddedItem(models.Model):
     item = models.ForeignKey("MenuItem", on_delete=models.CASCADE, related_name="added_item")
     cart = models.ForeignKey("Cart", on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
-    extras = models.ManyToManyField("MenuItem", through="ExtraSelection")
 
     def totalprice(self):
         if self.extras.all():
-            price=0
+            extrasprice = 0
             for extra in self.extras.all():
-                price += extra.price
-            return self.quantity * (self.item.price + price)
+                for i in extra.item.all():
+                    extrasprice += i.price
+            return self.quantity * self.item.price + extrasprice
         else:
             return self.quantity * self.item.price
 
     def __str__(self):
+        if self.extras.all():
+            return f"{self.quantity} x {self.item} at ${self.item.price} = ${self.totalprice()}"
+        else:
+            return f"{self.quantity} x {self.item} at ${self.item.price} = ${self.totalprice()}"
+
+    """def __str__(self):
         if self.extras.all():
             extras = self.extras.all()
             extrasprice = 0
@@ -103,11 +112,18 @@ class AddedItem(models.Model):
         else:
             return f"{self.quantity} x {self.item.product.name} at ${self.item.price} = ${self.totalprice()}"
         #sentence = "{self.quantity} x {self.item.product.name} with {self.item.product.addon_category}: " + addons + " at {self.item.price} = {self.totalprice()}"
-        # return f"{self.quantity} * {self.item.product.name} at {self.item.price} = {self.totalprice()}"
+        # return f"{self.quantity} * {self.item.product.name} at {self.item.price} = {self.totalprice()}  """
 
 class ExtraSelection(models.Model):
-    item = models.ForeignKey("MenuItem", on_delete=models.CASCADE)
-    main = models.ForeignKey("AddedItem", on_delete=models.CASCADE)
+    item = models.ManyToManyField("MenuItem")
+    main = models.ForeignKey("AddedItem", on_delete=models.CASCADE, related_name="extras")
+
+    def __str__(self):
+        if self.item:
+            sentence = ", ".join(str(i) for i in self.item.all())
+            return sentence
+        else:
+            return f"{self.item}"
 
 class Order(models.Model):
     carts = models.ManyToManyField(Cart)

@@ -18,35 +18,62 @@ def index(request):
 
 def menu(request):
     if request.method == "POST":
+        canOrder = request.user.is_authenticated
+
+        # First, get the user's cart
         cart = Cart.objects.filter(user=request.user, ordered=False).last()
+        # If cart doesn't exist for some reason, create a cart
         if not cart:
             cart = Cart(user=request.user)
             cart.save()
 
         insufficient = False
+        # Create the PRIMARY item that is added
         item = MenuItem.objects.get(id=request.POST["additem"])
+        # If ths item is a PIZZA or a SUB, get the selection for TOPPINGS / EXTRAS 
         if str(item.product.category) == "Regular Pizza" or str(item.product.category) == "Sicilian Pizza" or str(item.product.category) == "Sub":
             extras = request.POST.getlist("extras")
-            if not len(extras) == item.product.addon_limit:
+
+            # If the number of TOPPINGS are less than the LIMIT, it's insufficient, do not proceed 
+            if not len(extras) == item.product.addon_limit and item.product.addon_limit > 0:
                 insufficient = True
+
+                ### Need to render the page with the new context
+                context = {
+                    "user": request.user,
+                    "canOrder": canOrder,
+                    "products": Product.objects.all(),
+                    "categories": Category.objects.all(),
+                    "topping": Category.objects.get(name="Topping"),
+                    "extra": Category.objects.get(name="Extra"),
+                    "cart": cart,
+                    "insufficient": insufficient
+                }
+                return render(request, "orders/home.html", context)
+
             else:
                 insufficient = False
 
+        # Add the item to the cart
         addeditem = AddedItem.objects.filter(cart=cart, item=item)
+        # If the item (MenuItem ID) already exists, increase the quantity
         if addeditem.count() > 0:
             addeditem = addeditem.first()
             addeditem.quantity += 1
             addeditem.save()
         else:
+        # Else: create a new AddedItem
             addeditem = AddedItem(item=item, cart=cart)
             addeditem.save()
         
-        for extra in extras:
-            extraitem = MenuItem.objects.get(id=extra)
-            extraselected = ExtraSelection(item=extraitem, main=addeditem)
+        if str(item.product.category) == "Regular Pizza" or str(item.product.category) == "Sicilian Pizza" or str(item.product.category) == "Sub":
+            extraselected = ExtraSelection(main=addeditem)
+            extraselected.save()
+            for extra in extras:
+                extraitem = MenuItem.objects.get(id=extra)
+                extraselected.item.add(extraitem)
             extraselected.save()
 
-        canOrder = request.user.is_authenticated
         debug = request.POST["additem"]
         # img = "/static/orders/images/pizza/0.jpg"
         context = {
@@ -56,7 +83,7 @@ def menu(request):
             "categories": Category.objects.all(),
             "topping": Category.objects.get(name="Topping"),
             "extra": Category.objects.get(name="Extra"),
-            "cart": 1,
+            "cart": cart,
             "debug": debug,
             "insufficient": insufficient
         }

@@ -36,11 +36,20 @@ Your Cart
             {% for item in addeditems %}
                 <div class="row">
                     <div class="col-2"></div>
-                    <div class="col-2">
+                    <div class="col-2" style="margin-top: auto; margin-bottom: auto;">
                         <img class="img-fluid" src="/static/orders/images/{{ item.item.product.category.name }}/{{ item.item.product.name }}.jpg" alt="Image" style="max-height: 150px; border-radius: 50%;">
                     </div>
                     <div class="col-3" style="margin-top: auto; margin-bottom: auto;">
-                        <p>{{ item.item.product }} ({{ item.item.get_size_display }})</p>
+                        <p>{{ item.item.product }} {% if item.item.get_size_display %}({{ item.item.get_size_display }}){% endif %}</p>
+                        {% if item.extras.all %}
+                            {% for extra in item.extras.all %}
+                                <p style="color: rgba(205, 33, 42); font-size: 14px;">
+                                    {% if item.item.product.addon_limit > 0 %}
+                                        {{ item.item.product.addon_category}}(s): {{ extra }}
+                                    {% endif %}
+                                </p>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                     <div class="col-2" style="margin-top: auto; margin-bottom: auto;">
                         <div class="row">
