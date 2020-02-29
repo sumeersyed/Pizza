@@ -44,7 +44,7 @@ Your Cart
                         {% if item.extras.all %}
                             {% for extra in item.extras.all %}
                                 <p style="color: rgba(205, 33, 42); font-size: 14px;">
-                                    {% if item.item.product.addon_limit > 0 %}
+                                    {% if not item.item.product.name == "Cheese" and not item.item.product.category == "Sub" %}
                                         {{ item.item.product.addon_category}}(s): {{ extra }}
                                     {% endif %}
                                 </p>

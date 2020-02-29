@@ -47,9 +47,18 @@ class MenuItem(models.Model):
             size = self.get_size_display()
         else:
             size = ""
-        if self.product.stylized_name:
-            return f"{size} {cat} {self.product.stylized_name}{price}"
-        return f"{size} {cat} {self.product.name}{price}"
+        if self.product.category.category_type == 'primary':            
+            if self.product.stylized_name:
+                return f"{size} {cat} {self.product.stylized_name}{price}"
+            return f"{size} {cat} {self.product.name}{price}"
+        else:
+            if self.product.category == "Topping":
+                return f"{cat} {self.product.name}"
+            else:
+                if self.product.stylized_name:
+                    return f"{cat} {self.product.stylized_name}"
+                else:
+                    return f"{cat} {self.product.name}"
 
 # Cart 
 class Cart(models.Model):
