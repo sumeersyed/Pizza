@@ -22,7 +22,16 @@ def menu(request):
         if not cart:
             cart = Cart(user=request.user)
             cart.save()
-        item = MenuItem.objects.get(id=request.POST["additem"])    
+
+        insufficient = False
+        item = MenuItem.objects.get(id=request.POST["additem"])
+        if str(item.product.category) == "Regular Pizza" or str(item.product.category) == "Sicilian Pizza" or str(item.product.category) == "Sub":
+            extras = request.POST.getlist("extras")
+            if not len(extras) == item.product.addon_limit:
+                insufficient = True
+            else:
+                insufficient = False
+
         addeditem = AddedItem.objects.filter(cart=cart, item=item)
         if addeditem.count() > 0:
             addeditem = addeditem.first()
@@ -31,6 +40,11 @@ def menu(request):
         else:
             addeditem = AddedItem(item=item, cart=cart)
             addeditem.save()
+        
+        for extra in extras:
+            extraitem = MenuItem.objects.get(id=extra)
+            extraselected = ExtraSelection(item=extraitem, main=addeditem)
+            extraselected.save()
 
         canOrder = request.user.is_authenticated
         debug = request.POST["additem"]
@@ -43,7 +57,8 @@ def menu(request):
             "topping": Category.objects.get(name="Topping"),
             "extra": Category.objects.get(name="Extra"),
             "cart": 1,
-            "debug": debug
+            "debug": debug,
+            "insufficient": insufficient
         }
         return render(request, "orders/home.html", context)
     elif request.method == "GET":

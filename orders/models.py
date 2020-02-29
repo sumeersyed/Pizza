@@ -83,8 +83,9 @@ class AddedItem(models.Model):
 
     def totalprice(self):
         if self.extras.all():
-            for extra in self.extras:
-                price += extra.item.price
+            price=0
+            for extra in self.extras.all():
+                price += extra.price
             return self.quantity * (self.item.price + price)
         else:
             return self.quantity * self.item.price
@@ -94,7 +95,7 @@ class AddedItem(models.Model):
             extras = self.extras.all()
             extrasprice = 0
             for extra in extras:
-                extrasprice += extra.price
+                extrasprice += extra.price  
             string = ", ".join(str(extra) for extra in extras)
             totalprice = self.item.price + extrasprice
             sentence = f"{self.quantity} x {self.item} with {self.item.product.addon_category}: " + string + f" at $" + str(totalprice)
