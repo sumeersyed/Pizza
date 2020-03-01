@@ -6,30 +6,29 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+import datetime
 
+from functools import wraps
 
 #   from .models import Pizza, Topping, Sub, Extra, Primo, Platter
-from .models import MenuItem, Category, Product, Cart, AddedItem, Order, ExtraSelection
+from .models import MenuItem, Category, Product, Cart, AddedItem, History, ExtraSelection
 from .forms import RegistrationForm
 
 # Create your views here.
 def index(request):
-    return render(request, "orders/index.html", {"message": None})
+    cart = get_cart(request)
+    return render(request, "orders/index.html", {"cart": cart})
 
 def menu(request):
+    canOrder = request.user.is_authenticated
+    cart = get_cart(request)
     if request.method == "POST":
-        canOrder = request.user.is_authenticated
-
-        # First, get the user's cart
-        cart = Cart.objects.filter(user=request.user, ordered=False).last()
-        # If cart doesn't exist for some reason, create a cart
-        if not cart:
-            cart = Cart(user=request.user)
-            cart.save()
-
         insufficient = False
         # Create the PRIMARY item that is added
-        item = MenuItem.objects.get(id=request.POST["additem"])
+        if "additem" in request.POST:
+            item = MenuItem.objects.get(id=request.POST["additem"])
+        elif "haba" in request.POST:
+            item = MenuItem.objects.get(id=request.POST["additem2"])
         # If ths item is a PIZZA or a SUB, get the selection for TOPPINGS / EXTRAS 
         if str(item.product.category) == "Regular Pizza" or str(item.product.category) == "Sicilian Pizza" or str(item.product.category) == "Sub":
             extras = request.POST.getlist("extras")
@@ -89,14 +88,14 @@ def menu(request):
         }
         return render(request, "orders/home.html", context)
     elif request.method == "GET":
-        canOrder = request.user.is_authenticated    
         context = {
             "user": request.user,
             "canOrder": canOrder,
             "products": Product.objects.all(),
             "categories": Category.objects.all(),
             "topping": Category.objects.get(name="Topping"),
-            "extra": Category.objects.get(name="Extra")
+            "extra": Category.objects.get(name="Extra"),
+            "cart": cart
         }
         return render(request, "orders/home.html", context)
 
@@ -104,10 +103,7 @@ def menu(request):
 
 @login_required(login_url='/login')
 def cart(request):
-    cart = Cart.objects.filter(user=request.user, ordered=False).last()
-    if not cart:
-        cart = Cart(user=request.user)
-        cart.save()
+    cart = get_cart(request)
 
     addeditems = AddedItem.objects.filter(cart=cart).all
 
@@ -135,8 +131,34 @@ def cart(request):
             itemid = request.POST["deleteitem"]
             item = AddedItem.objects.filter(id=itemid)
             item.delete()
-
+        elif "submit" in request.POST:
+            cart.ordered_time = datetime.datetime.now()
+            cart.ordered = True
+            cart.save()
+            history = History.objects.filter(user=request.user).first()
+            history.carts.add(cart)
+            history.save()
+            cart = get_cart(request)
+            return render(request, "orders/ordered.html", {"cart": cart})
     return render(request, "orders/cart.html", context)
+
+def ordered(request):
+    cart = get_cart(request)
+    cart.ordered_time = datetime.datetime.now()
+    cart.save()
+    history = History.objects.filter(user=request.user).first()
+    history.carts.add(cart)
+    history.save()
+    return render(request, "orders/ordered.html", {"cart": cart})
+
+def history(request):
+    cart = get_cart(request)
+    history = History.objects.filter(user=request.user).first()
+    if not history:
+        history = History(user=request.user)
+        history.save()  
+    carts = history.carts.all()
+    return render(request, "orders/order_history.html", {"cart": cart, "history": history, "carts": carts})
 
 """ User login/register/logout """
 
@@ -169,3 +191,15 @@ def register(request):
     else:
         form = RegistrationForm()
     return render(request, "orders/register.html", {"form": form})
+
+
+""" Helpers (can try making it a decorator next time) """
+
+def get_cart(request):
+    # First, get the user's cart
+    cart = Cart.objects.filter(user=request.user, ordered=False).last()
+    # If cart doesn't exist for some reason, create a cart
+    if cart is None:
+        cart = Cart(user=request.user, ordered=False)
+        cart.save()
+    return cart

@@ -65,11 +65,14 @@ class Cart(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     items = models.ManyToManyField("MenuItem", through="AddedItem")
     ordered = models.BooleanField(default=False)
+    ordered_time = models.DateTimeField(auto_now=False, null=True)
+    delivered_time = models.DateTimeField(auto_now=False, null=True, blank=True)
 
     def totalquantity(self):
         q = 0
         for item in self.items.all():
-            q += item.added_item.first().quantity
+            if item.product.category.category_type == 'primary':
+                q += item.added_item.last().quantity
         return q
 
     def subtotal(self):
@@ -134,7 +137,6 @@ class ExtraSelection(models.Model):
         else:
             return f"{self.item}"
 
-class Order(models.Model):
-    carts = models.ManyToManyField(Cart)
-    created = models.DateTimeField(auto_now_add=True, blank=True)
-    finished = models.DateTimeField(default=False)
+class History(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    carts = models.ManyToManyField("Cart")

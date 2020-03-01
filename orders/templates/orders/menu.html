@@ -36,7 +36,7 @@
                                 <img class="img-fluid" src="/static/orders/images/{{ category.name }}/{{ product.name }}.jpg" alt="{{ product.name }}" style="max-height: 150px; border-radius: 50%;">
                             </div>
                             <div class="col-2 text-left" style="margin-top: auto; margin-bottom: auto;">
-                                <form action="/menu" method="post">
+                                <form action="{% url 'menu' %}" method="post">
                                 {% if product.stylized_name %} {{ product.stylized_name}} {% else %} {{ product.name }} {% endif %}
                                 {% if not product.name == "Cheese" and category.name == "Regular Pizza" or not product.name == "Cheese" and category.name == "Sicilian Pizza" %}
                                     <div style="margin-top: 5px;">

@@ -6,9 +6,18 @@
 
 {% block body %}
     <h4>This is your Order History</h4><br>
-    {% if history.carts %}
-        {% for cart in history.carts %}
-            {{ cart }}
+    {% if carts %}
+        {% for cart in carts %}
+            <h5>Order: 10000{{ cart.id }}</h5>
+            {% for item in cart.items.all %}
+                <p>{{ item }}</p>
+            {% endfor %}
+            <h6>Price: ${{ cart.subtotal }}</h6>
+            <h6>Time Ordered: {{ cart.ordered_time }}</h6>
+            <h6>Delivery Time: {{ cart.delivered_time }}</h6>
+            <br>
+            <hr style="width: 25%;">
+            <br>
         {% endfor %}
     {% else %}
         <p>No order history found!</p>

@@ -105,10 +105,9 @@
                     {% else %}
                     <script src="https://use.fontawesome.com/c560c025cf.js"></script>
                         <a class="nav-item nav-link mr-auto active" href="{% url 'cart' %}" tabindex="-1" aria-disabled="true"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Cart</a>
-                        {% if cart %}
-                            1
-                        {% endif %}
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <div style="background: rgba(125, 33, 42); color: #ffffff; height: 22px; width: 22px; border-radius: 50%; text-align: center; font-size: 15px; padding-right: 1px; padding-bottom: 1px;">{{ cart.totalquantity }}</div>
+                        &nbsp;
+                        <a class="nav-item nav-link mr-auto active" href="{% url 'history' %}" tabindex="-1" aria-disabled="true">History</a>  
                         <a class="nav-item nav-link mr-auto active" href="{% url 'logout' %}" tabindex="-1" aria-disabled="true">Logout</a>                        
                     {% endif %}
                 </div>
