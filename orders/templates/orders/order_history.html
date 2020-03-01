@@ -1,0 +1,16 @@
+{% extends "orders/base.html" %}
+
+{% block title %}
+    Order History
+{% endblock %}
+
+{% block body %}
+    <h4>This is your Order History</h4><br>
+    {% if history.carts %}
+        {% for cart in history.carts %}
+            {{ cart }}
+        {% endfor %}
+    {% else %}
+        <p>No order history found!</p>
+    {% endif %}
+{% endblock %}
