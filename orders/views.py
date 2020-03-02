@@ -65,7 +65,7 @@ def menu(request):
             addeditem = AddedItem(item=item, cart=cart)
             addeditem.save()
         
-        if str(item.product.category) == "Regular Pizza" or str(item.product.category) == "Sicilian Pizza" or str(item.product.category) == "Sub":
+        if str(item.product.category) == "Regular Pizza" and item.product.name != "Cheese" or str(item.product.category) == "Sicilian Pizza" and item.product.name != "Cheese" or str(item.product.category) == "Sub": 
             extraselected = ExtraSelection(main=addeditem)
             extraselected.save()
             for extra in extras:
@@ -119,6 +119,13 @@ def cart(request):
             item = AddedItem.objects.get(id=itemid)
             item.quantity += 1
             item.save()
+            if item.item.product.addon_category:
+                itemtoppings = item.extras.last().item.all()
+                extraselected = ExtraSelection(main=item)
+                extraselected.save()
+                for extra in itemtoppings:
+                    extraitem = MenuItem.objects.get(id=extra.id)
+                    extraselected.item.add(extraitem)
         elif "minusitem" in request.POST:
             itemid = request.POST["minusitem"]
             item = AddedItem.objects.get(id=itemid)
@@ -127,6 +134,8 @@ def cart(request):
             else:
                 item.quantity -= 1
                 item.save()
+                if item.item.product.addon_category:
+                    itemtoppings = item.extras.last().delete()
         elif "deleteitem" in request.POST:
             itemid = request.POST["deleteitem"]
             item = AddedItem.objects.filter(id=itemid)
