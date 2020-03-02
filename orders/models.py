@@ -84,15 +84,6 @@ class Cart(models.Model):
     def cartnumber(self):
         return 10000 + self.id
 
-    """ def __str__(self):
-        items = self.items.all()
-        main = str(items[0])
-        extras = "(" + ", ".join(str(x) for x in items[1:]) + ")" if items[1:] else ""
-        return main + extras
-
-    def total_sum(self):
-        return sum(filter(None, [item.price for item in self.items.all()])) """
-
 class AddedItem(models.Model):
     item = models.ForeignKey("MenuItem", on_delete=models.CASCADE, related_name="added_item")
     cart = models.ForeignKey("Cart", on_delete=models.CASCADE)
@@ -113,21 +104,6 @@ class AddedItem(models.Model):
             return f"{self.quantity} x {self.item} at ${self.item.price} = ${self.totalprice()}"
         else:
             return f"{self.quantity} x {self.item} at ${self.item.price} = ${self.totalprice()}"
-
-    """def __str__(self):
-        if self.extras.all():
-            extras = self.extras.all()
-            extrasprice = 0
-            for extra in extras:
-                extrasprice += extra.price  
-            string = ", ".join(str(extra) for extra in extras)
-            totalprice = self.item.price + extrasprice
-            sentence = f"{self.quantity} x {self.item} with {self.item.product.addon_category}: " + string + f" at $" + str(totalprice)
-            return sentence
-        else:
-            return f"{self.quantity} x {self.item.product.name} at ${self.item.price} = ${self.totalprice()}"
-        #sentence = "{self.quantity} x {self.item.product.name} with {self.item.product.addon_category}: " + addons + " at {self.item.price} = {self.totalprice()}"
-        # return f"{self.quantity} * {self.item.product.name} at {self.item.price} = {self.totalprice()}  """
 
 class ExtraSelection(models.Model):
     item = models.ManyToManyField("MenuItem")

@@ -6,10 +6,11 @@
     </div>
     <br>
 
-    <!-- <div style="background-color: yellow; width: 50%; margin-left: auto; margin-right: auto; text-align: center;">
+    <div style="background-color: yellow; width: 50%; margin-left: auto; margin-right: auto; text-align: center;">
         <p>Debug: </p>
         <p>{{ debug }}</p>
-    </div> -->
+        <p>{{ debug2 }}</p>
+    </div> 
     
     
     <div class="container-fluid">
@@ -31,7 +32,8 @@
                 </div>
                 {% for product in products %}
                     {% if product.category == category %}
-                        <form action="{% url 'menu' %}" method="post">
+                        <form action="{% url 'menu' %}" name="form2" id="form1" method="post">
+                            {% csrf_token %}
                             <div class="form-row">
                             <div class="col-3"></div>
                             <div class="col-2">
@@ -76,27 +78,21 @@
                                     <div class="col-2" style="margin-top: auto; margin-bottom: auto;">
                                         ${{ item.price }}
                                         <br>
-                                        {% csrf_token %}
-                                        <input type="hidden" name="additem" value="{{ item.id }}">
-                                        <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px;">
+                                        <button name="additem" class="btn btn-primary pizza-button" type="submit" value="{{ item.id }}" style="border: none; margin-top: 5px;">Add</button>
                                     </div>
                                 {% endif %}
                                 {% if item.size == 's' and item.price %}
                                     <div class="col-1" style="margin-top: auto; margin-bottom: auto;">
                                         ${{ item.price }}
                                         <br>
-                                        {% csrf_token %}
-                                        <input type="hidden" name="additem" value="{{ item.id }}">
-                                        <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px;">
+                                        <button name="additem" class="btn btn-primary pizza-button" type="submit" value="{{ item.id }}" style="border: none; margin-top: 5px;">Add</button>
                                     </div>
                                 {% endif %}
                                 {% if item.size == 'l' and item.price %}
                                     <div class="col-1" style="margin-top: auto; margin-bottom: auto;">
                                         ${{ item.price }}
                                         <br>
-                                        {% csrf_token %}
-                                        <input type="hidden" name="additem" value="{{ item.id }}">
-                                        <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px;">
+                                        <button name="additem" class="btn btn-primary pizza-button" type="submit" value="{{ item.id }}" style="border: none; margin-top: 5px;">Add</button>
                                     </div>
                                 {% endif %}
                             {% endfor %}
@@ -108,103 +104,4 @@
             <br>
         {% endif %}
     {% endfor %}
-</div>
-
-    <!-- {% for category in categories %}
-        {% if category.category_type == "primary" %}
-            <h4>{{ category.menu_name }}</h4>
-            {% if category.name == "Sicilian Pizza" %}
-                <p><small>What's the difference between Regular and Sicilian Pizza? Click <a href="" data-toggle="modal" data-target="#exampleModal">here</a> to find out</small></p><br>
-            {% endif %}
-            <br>
-            <div class="container-fluid"><b>
-                <div class="row">
-                    {% if not category.name == "Salad" or category.name == "Pasta" %}
-                    <div class="col-7"></div>
-                    <div class="col-1"><b>Small</b></div>
-                    <div class="col-1"><b>Large</b></div>
-                    <div class="col-3"></div>
-                    {% else %}
-                    <div class="col-12"></div>
-                    {% endif %}
-                </div>
-                {% for product in products %}
-                    {% if product.category == category %}
-                        <form action="{% url 'menu' %}" method="post">
-                            <div class="form-row">
-                            <div class="col-3"></div>
-                            <div class="col-2">
-                                <img class="img-fluid" src="/static/orders/images/{{ category.name }}/{{ product.name }}.jpg" alt="{{ product.name }}" style="max-height: 150px; border-radius: 50%;">
-                            </div>
-                            <div class="col-2 text-left" style="margin-top: auto; margin-bottom: auto;">
-                                {% if product.stylized_name %} {{ product.stylized_name}} {% else %} {{ product.name }} {% endif %}
-                                {% if not product.name == "Cheese" and category.name == "Regular Pizza" or not product.name == "Cheese" and category.name == "Sicilian Pizza" %}
-                                    <div style="margin-top: 5px;">
-                                        <select name="extras" class="selectpicker form-control pizza-button" data-width="75%" multiple data-max-options="{{ product.addon_limit }}">
-                                            {% for p in products %}
-                                                {% if p.category == topping %}
-                                                    {% for item in p.menu_items.all %}
-                                                        <option value="{{ item.id }}">{% if p.stylized_name %} {{ p.stylized_name}} {% else %} {{ p.name }} {% endif %}</option>
-                                                    {% endfor %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                {% elif category.name == "Sub" %}
-                                    <div style="margin-top: 5px;">
-                                        <select name="extras" class="selectpicker form-control pizza-button" data-width="75%" multiple data-max-options="{{ product.addon_limit }}">
-                                            {% for x in products %}
-                                                {% if x.category == extra and product.addon_limit == 1 %}
-                                                    {% if x.category == extra and x.name == "Extra Cheese" %}
-                                                        {% for item in x.menu_items.all %}
-                                                            <option value="{{ item.id }}">{{ x.stylized_name}}</option>
-                                                        {% endfor %}
-                                                    {% endif %}
-                                                {% elif x.category == extra %}
-                                                    {% for item in x.menu_items.all %}
-                                                        <option value="{{ item.id }}">{{ x.stylized_name}}</option>
-                                                    {% endfor %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                {% endif %}
-                            </div>
-                            {% for item in product.menu_items.all %}
-                                {% if not item.size %}
-                                    <div class="col-2" style="margin-top: auto; margin-bottom: auto;">
-                                        ${{ item.price }}
-                                        <br>
-                                        {% csrf_token %}
-                                        <input type="hidden" name="additem" value="{{ item.id }}">
-                                        <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px;">
-                                    </div>
-                                {% endif %}
-                                {% if item.size == 's' and item.price %}
-                                    <div class="col-1" style="margin-top: auto; margin-bottom: auto;">
-                                        ${{ item.price }}
-                                        <br>
-                                        {% csrf_token %}
-                                        <input type="hidden" name="additem" value="{{ item.id }}">
-                                        <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px;">
-                                    </div>
-                                {% endif %}
-                                {% if item.size == 'l' and item.price %}
-                                    <div class="col-1" style="margin-top: auto; margin-bottom: auto;">
-                                        ${{ item.price }}
-                                        <br>
-                                        {% csrf_token %}
-                                        <input type="hidden" name="additem" value="{{ item.id }}">
-                                        <input class="btn btn-primary pizza-button" type="submit" value="Add" style="border: none; margin-top: 5px;">
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
-                        </form>
-                        <div class="col-3"></div>
-                    </div><br>
-                    {% endif %}
-                {% endfor %}
-            </b><br>
-        {% endif %}
-    {% endfor %} -->
 </div>
