@@ -8,6 +8,7 @@ Your Cart
     <h1>Your Shopping Cart</h1>
     <br>
 
+    <!--
     <h1>{{ cart }}</h1>
     <hr>
     <h1>{{ delete }}</h1>
@@ -15,9 +16,9 @@ Your Cart
 
     {% for item in addeditems %}
         <h2>{{ item }}</h2>
-    {% endfor %}
+    {% endfor %} -->
 
-    <h4>Your Items</h4><br><br>
+    <h4>Your Items</h4><hr style="width: 75%;"><br>
     {% if not addeditems %}
     <div class="alert alert-warning" role="alert" style="width: 50%; margin: auto;">
         Your shopping cart is currently empty!
@@ -26,8 +27,8 @@ Your Cart
     {% else %}
         <div class="container-fluid"><b>
             <div class="row">
-                <div class="col-2"></div>
-                <div class="col-2"><h5>Product</h5></div>
+                <div class="col-1"></div>
+                <div class="col-3"><h5>Product</h5></div>
                 <div class="col-3"></div>
                 <div class="col-2"><h5>Qty</h5></div>
                 <div class="col-2"><h5>Price</h5></div>
@@ -35,8 +36,8 @@ Your Cart
             </div><br>
             {% for item in addeditems %}
                 <div class="row">
-                    <div class="col-2"></div>
-                    <div class="col-2" style="margin-top: auto; margin-bottom: auto;">
+                    <div class="col-1"></div>
+                    <div class="col-3" style="margin-top: auto; margin-bottom: auto;">
                         <img class="img-fluid" src="/static/orders/images/{{ item.item.product.category.name }}/{{ item.item.product.name }}.jpg" alt="Image" style="max-height: 150px; border-radius: 50%;">
                     </div>
                     <div class="col-3" style="margin-top: auto; margin-bottom: auto;">
@@ -74,8 +75,8 @@ Your Cart
                         <form action="" method="post">
                             {% csrf_token %}
                             <input type="hidden" name="deleteitem" value="{{ item.id }}">
-                            {{ item.totalprice }} | {{ item.id }}&nbsp;
-                            <input class="btn btn-primary pizza-button" type="submit" value="X" style="border: none; border-radius: 50%; height: 25px; width: 25px; padding: 0px; padding-bottom: 1px;">
+                            {{ item.totalprice }}&nbsp;
+                            <input class="btn btn-primary pizza-button" type="submit" value="X" style="border: none; border-radius: 50%; height: 25px; width: 25px; padding: 0px; padding-right: 2px; padding-bottom: 1px;">
                         </form>
                     </div>
                     <div class="col-1"></div>
@@ -83,50 +84,51 @@ Your Cart
                 <br>
             {% endfor %}
         </div>
+        <div class="container-fluid">
+            <br><br><hr style="width: 50%;"><br>
+            <div class="row">
+                <div class="col-4"></div>
+                <div class="col-2">
+                    {{ cart.totalquantity }} Item(s) in Total
+                </div>
+                <div class="col-2">
+                    ${{ cart.subtotal }}
+                </div>
+                <div class="col-4"></div>
+            </div><br>
+            <div class="row">
+                <div class="col-4"></div>
+                <div class="col-2">
+                    Delivery
+                </div>
+                <div class="col-2">
+                    {% if deliveryfee %}
+                        ${{ deliveryfee }}
+                    {% else %}
+                        FREE!
+                    {% endif %}
+                </div>
+                <div class="col-4"></div>
+            </div><br>
+            <div class="row">
+                <div class="col-4"></div>
+                <div class="col-2">
+                    Subtotal
+                </div>
+                <div class="col-2">
+                    {% if deliveryfee %}
+                        ${{ totalprice }}
+                    {% else %}
+                        ${{ cart.subtotal }}
+                    {% endif %}
+                </div>
+                <div class="col-4"></div>
+            </div>
+            <br><hr style="width: 50%;">
+            {% include 'orders/billing.html' %}
+        </b></div>
     {% endif %}
 
-    <div class="container-fluid">
-        <br><br><hr style="width: 50%;"><br><br><br>
-        <div class="row">
-            <div class="col-4"></div>
-            <div class="col-2">
-                {{ cart.totalquantity }} Item(s) in Total
-            </div>
-            <div class="col-2">
-                ${{ cart.subtotal }}
-            </div>
-            <div class="col-4"></div>
-        </div><br>
-        <div class="row">
-            <div class="col-4"></div>
-            <div class="col-2">
-                Delivery
-            </div>
-            <div class="col-2">
-                {% if deliveryfee %}
-                    ${{ deliveryfee }}
-                {% else %}
-                    FREE!
-                {% endif %}
-            </div>
-            <div class="col-4"></div>
-        </div><br>
-        <div class="row">
-            <div class="col-4"></div>
-            <div class="col-2">
-                Subtotal
-            </div>
-            <div class="col-2">
-                {% if deliveryfee %}
-                    ${{ totalprice }}
-                {% else %}
-                    ${{ cart.subtotal }}
-                {% endif %}
-            </div>
-            <div class="col-4"></div>
-        </div>
-        <br><hr style="width: 50%;">
-        {% include 'orders/billing.html' %}
-    </b></div>
+    
 
 {% endblock %}

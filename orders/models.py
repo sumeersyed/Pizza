@@ -81,6 +81,9 @@ class Cart(models.Model):
             total += item.added_item.first().totalprice()
         return total
 
+    def cartnumber(self):
+        return 10000 + self.id
+
     """ def __str__(self):
         items = self.items.all()
         main = str(items[0])

@@ -8,13 +8,21 @@
     <h4>This is your Order History</h4><br>
     {% if carts %}
         {% for cart in carts %}
-            <h5>Order: 10000{{ cart.id }}</h5>
+            <h5>Order: {{ cart.cartnumber }}</h5>
             {% for item in cart.items.all %}
-                <p>{{ item }}</p>
+                <p><b>{{ item.added_item.first }}</b></p>
+                {% if item.added_item.first.extras.first %}
+                <div class="text-center">
+                    {% for extra in item.added_item.first.extras.all %}
+                        <li style="display: list-item; color: black;">{{ extra.item.first.product.category }}(s): {{ extra }}</li>
+                    {% endfor %}
+                    <br>
+                </div>
+                {% endif %}
             {% endfor %}
             <h6>Price: ${{ cart.subtotal }}</h6>
             <h6>Time Ordered: {{ cart.ordered_time }}</h6>
-            <h6>Delivery Time: {{ cart.delivered_time }}</h6>
+            <h6>Time Delivered: {% if not cart.delivered_time %} <span style="color: black;">Delivering...</span> {% else %} {{ cart.delivered_time }} {% endif %}</h6>
             <br>
             <hr style="width: 25%;">
             <br>
