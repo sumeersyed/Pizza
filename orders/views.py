@@ -36,37 +36,37 @@ def menu(request):
         context = {}
     if request.method == "POST":
         # Create the PRIMARY item that is added
-        if "additem" in request.POST:
+        if int(request.POST["additem"]) > 0:
             item = MenuItem.objects.get(id=request.POST["additem"])          
-        # If ths item is a PIZZA or a SUB, get the selection for TOPPINGS / EXTRAS 
-        if str(item.product.category) == "Regular Pizza" or str(item.product.category) == "Sicilian Pizza" or str(item.product.category) == "Sub":
-            extras = request.POST.getlist("extras")
-            # If the number of TOPPINGS are less than the LIMIT, it's insufficient, do not proceed 
-            if not len(extras) == item.product.addon_limit and item.product.addon_limit > 0:
-                ### Need to render the page with the new context
-                context["insufficient"] = True
-                return render(request, "orders/home.html", context)
-            else:
-                context["insufficient"] = False
+            # If ths item is a PIZZA or a SUB, get the selection for TOPPINGS / EXTRAS 
+            if str(item.product.category) == "Regular Pizza" or str(item.product.category) == "Sicilian Pizza" or str(item.product.category) == "Sub":
+                extras = request.POST.getlist("extras")
+                # If the number of TOPPINGS are less than the LIMIT, it's insufficient, do not proceed 
+                if not len(extras) == item.product.addon_limit and item.product.addon_limit > 0:
+                    ### Need to render the page with the new context
+                    context["insufficient"] = True
+                    return render(request, "orders/home.html", context)
+                else:
+                    context["insufficient"] = False
 
-        # Add the item to the cart
-        addeditem = AddedItem.objects.filter(cart=context["cart"], item=item)
-        # If the item (MenuItem ID) already exists, increase the quantity
-        if addeditem.count() > 0:
-            addeditem = addeditem.first()
-            addeditem.quantity += 1
-            addeditem.save()
-        else:
-        # Else: create a new AddedItem
-            addeditem = AddedItem(item=item, cart=context["cart"])
-            addeditem.save()
-        if str(item.product.category) == "Regular Pizza" and item.product.name != "Cheese" or str(item.product.category) == "Sicilian Pizza" and item.product.name != "Cheese" or str(item.product.category) == "Sub": 
-            extraselected = ExtraSelection(main=addeditem)
-            extraselected.save()
-            for extra in extras:
-                extraitem = MenuItem.objects.get(id=extra)
-                extraselected.item.add(extraitem)
-            extraselected.save()
+            # Add the item to the cart
+            addeditem = AddedItem.objects.filter(cart=context["cart"], item=item)
+            # If the item (MenuItem ID) already exists, increase the quantity
+            if addeditem.count() > 0:
+                addeditem = addeditem.first()
+                addeditem.quantity += 1
+                addeditem.save()
+            else:
+            # Else: create a new AddedItem
+                addeditem = AddedItem(item=item, cart=context["cart"])
+                addeditem.save()
+            if str(item.product.category) == "Regular Pizza" and item.product.name != "Cheese" or str(item.product.category) == "Sicilian Pizza" and item.product.name != "Cheese" or str(item.product.category) == "Sub": 
+                extraselected = ExtraSelection(main=addeditem)
+                extraselected.save()
+                for extra in extras:
+                    extraitem = MenuItem.objects.get(id=extra)
+                    extraselected.item.add(extraitem)
+                extraselected.save()
         return render(request, "orders/home.html", context)
 
     elif request.method == "GET":
@@ -177,4 +177,7 @@ def get_cart(request):
     if cart is None:
         cart = Cart(user=request.user, ordered=False)
         cart.save()
+    history = History.objects.filter(user=request.user).first()
+    if history is None:
+        history = History(user=request.user).save()
     return cart

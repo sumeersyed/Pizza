@@ -4,6 +4,7 @@ from django.conf import settings
 
 # Create your models here
 
+
 # Menu
 class Category(models.Model):
     CATEGORY_TYPES = (("primary", "Primary"), ("topping", "Topping"), ("extra", "Extra"))
@@ -84,6 +85,9 @@ class Cart(models.Model):
     def cartnumber(self):
         return 10000 + self.id
 
+    def __str__(self):
+        return f"Cart No. {self.cartnumber()} from {self.user}"
+
 class AddedItem(models.Model):
     item = models.ForeignKey("MenuItem", on_delete=models.CASCADE, related_name="added_item")
     cart = models.ForeignKey("Cart", on_delete=models.CASCADE)
@@ -118,4 +122,7 @@ class ExtraSelection(models.Model):
 
 class History(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    carts = models.ManyToManyField("Cart")
+    carts = models.ManyToManyField("Cart", related_name="history")
+
+    def __str__(self):
+        return f"{self.user}'s Order History"
